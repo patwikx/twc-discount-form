@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DiscountApplication {
+  id String @id @default(uuid())
+
+  // Applicant Details
+  employeeType  String // "Employee" | "Relative"
+  name          String
+  idNumber      String
+  companyId     String
+  company       Company  @relation(fields: [companyId], references: [id])
+  department    String
+  position      String
+  availmentDate DateTime
+  phoneNumber   String
+  email         String // Employee email for status notifications
+
+  // Application details
+  hotel        String // e.g. "Dolores Hotel, Dolores Tropicana"
+  discountType String // e.g. "Entrance, Cottage"
+
+  // Approval Workflow
+  status        String @default("PENDING") // PENDING, APPROVED, REJECTED, USED
+  approverEmail String
+  qrToken       String @unique @default(uuid()) // Token for QR Code
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  usedAt    DateTime?
+}
+
+model Company {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  approverEmail String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  applications DiscountApplication[]
+}
+
+model Hotel {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscountType {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
