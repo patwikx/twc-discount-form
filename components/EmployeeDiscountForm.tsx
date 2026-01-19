@@ -5,7 +5,10 @@ import { submitApplication } from "@/actions/application";
 import { getCompanies } from "@/actions/companies";
 import { getHotels, getDiscountTypes } from "@/actions/lookups";
 import { Card, Button, Input, Checkbox } from "@/components/ui/brutalist";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 type Company = {
   id: string;
@@ -48,12 +51,13 @@ export default function EmployeeDiscountForm() {
     companyId: "",
     department: "",
     position: "",
-    availmentDate: "",
     phoneNumber: "",
     email: "",
     hotels: [] as string[],
     discountTypes: [] as string[],
   });
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,12 +66,17 @@ export default function EmployeeDiscountForm() {
 
     try {
       if (!formData.companyId) throw new Error("Please select a company/resort.");
+      if (!selectedDate) throw new Error("Please select an availment date.");
       if (formData.hotels.length === 0) throw new Error("Please select at least one hotel.");
       if (formData.discountTypes.length === 0) throw new Error("Please select at least one discount type.");
       
+      // Create date at noon in Philippines timezone to avoid date shift issues
+      const phDate = new Date(selectedDate);
+      phDate.setHours(12, 0, 0, 0);
+      
       const result = await submitApplication({
         ...formData,
-        availmentDate: new Date(formData.availmentDate),
+        availmentDate: phDate,
         hotel: formData.hotels,
         discountType: formData.discountTypes,
       });
@@ -199,12 +208,31 @@ export default function EmployeeDiscountForm() {
             </div>
             <div>
                 <label className="font-mono text-xs font-bold block mb-1">DATE OF AVAILMENT <span className="text-red-500">*</span></label>
-                <Input 
-                    type="date" 
-                    required 
-                    value={formData.availmentDate}
-                    onChange={(e) => setFormData({...formData, availmentDate: e.target.value})}
-                />
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <PopoverTrigger asChild>
+                        <button
+                            type="button"
+                            className="w-full border-2 border-black bg-transparent px-3 py-2 font-mono text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                        >
+                            <span className={selectedDate ? "text-black" : "text-gray-400"}>
+                                {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select date..."}
+                            </span>
+                            <span>📅</span>
+                        </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={(date) => {
+                                setSelectedDate(date);
+                                setCalendarOpen(false);
+                            }}
+                            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
             </div>
           </div>
         </div>
