@@ -85,8 +85,16 @@ export default async function CompaniesPage() {
           </table>
         )}
 
-        <div className="mt-6 pt-4 border-t-2 border-black">
+        <div className="mt-6 pt-4 border-t-2 border-black flex justify-between items-center">
           <Link href="/" className="font-mono text-sm underline">← Back to Form</Link>
+          <div className="flex gap-2">
+            <Link href="/admin/hotels">
+              <Button className="text-xs py-1 px-3 bg-blue-500 border-blue-700">HOTELS</Button>
+            </Link>
+            <Link href="/admin/discount-types">
+              <Button className="text-xs py-1 px-3 bg-purple-500 border-purple-700">DISCOUNT TYPES</Button>
+            </Link>
+          </div>
         </div>
       </Card>
     </div>
