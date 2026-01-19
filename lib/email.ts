@@ -36,6 +36,7 @@ export async function sendApprovalRequest(
               <!-- Header -->
               <tr>
                 <td style="background-color: #000000; color: #ffffff; padding: 20px; text-align: center;">
+                  <img src="${baseUrl}/twc-logo.png" alt="TWC Logo" width="60" height="60" style="display: block; margin: 0 auto 10px auto;">
                   <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">DOLORES HOTELS & RESORTS</h1>
                   <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">EMPLOYEE DISCOUNT APPLICATION</p>
                 </td>
@@ -187,6 +188,7 @@ export async function sendApplicationStatus(
               <!-- Header -->
               <tr>
                 <td style="background-color: #000000; color: #ffffff; padding: 20px; text-align: center;">
+                  <img src="${baseUrl}/twc-logo.png" alt="TWC Logo" width="60" height="60" style="display: block; margin: 0 auto 10px auto;">
                   <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">DOLORES HOTELS & RESORTS</h1>
                   <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">EMPLOYEE DISCOUNT APPLICATION</p>
                 </td>

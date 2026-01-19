@@ -90,8 +90,13 @@ export default function EmployeeDiscountForm() {
   return (
     <Card className="w-full max-w-4xl mx-auto my-10 animate-in fade-in slide-in-from-bottom-4 bg-[#f0f0f0]">
       <div className="border-b-2 border-black pb-4 mb-6">
-        <h1 className="font-mono text-3xl font-black uppercase tracking-tighter">Dolores Hotels & Resorts</h1>
-        <p className="font-mono text-sm uppercase text-gray-600">Employee Discount Application Form</p>
+        <div className="flex items-center gap-4">
+          <img src="/twc-logo.png" alt="TWC Logo" className="h-16 w-auto" />
+          <div>
+            <h1 className="font-mono text-3xl font-black uppercase tracking-tighter">Dolores Hotels & Resorts</h1>
+            <p className="font-mono text-sm uppercase text-gray-600">Employee Discount Application Form</p>
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -241,8 +246,8 @@ export default function EmployeeDiscountForm() {
             <h3 className="font-bold underline mb-2">TERMS & CONDITIONS</h3>
             <ul className="list-disc pl-4 space-y-1">
                 <li>RD Employee must fill-up & submit this form at least 5 days for cottage and room availment.</li>
-                <li>RD Employee must attached a photocopy of valid company ID (Requirement handled on entry).</li>
-                <li>No approval of Business Unit Head = No discounts.</li>
+                <li>RD Employee must bring a valid company ID (Requirement on entry and verification).</li>
+                <li>No approval of PMD Head = No discounts.</li>
             </ul>
         </div>
         
