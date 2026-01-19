@@ -197,7 +197,7 @@ export default function EmployeeDiscountForm() {
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
             </div>
-            <div className="md:col-span-2">
+            <div>
                 <label className="font-mono text-xs font-bold block mb-1">DATE OF AVAILMENT <span className="text-red-500">*</span></label>
                 <Input 
                     type="date" 
