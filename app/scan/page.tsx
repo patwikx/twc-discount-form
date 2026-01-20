@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { validateToken, redeemToken } from "@/actions/application";
 import { Card, Button, Input, Badge } from "@/components/ui/brutalist";
-import { Html5Qrcode } from "html5-qrcode";
+import type { Html5Qrcode } from "html5-qrcode";
 
 export default function ScanPage() {
   const [token, setToken] = useState("");
@@ -28,6 +28,9 @@ export default function ScanPage() {
     setResult(null);
     
     try {
+      // Dynamically import the library to avoid SSR issues
+      const { Html5Qrcode } = await import("html5-qrcode");
+      
       if (!scannerRef.current) {
         scannerRef.current = new Html5Qrcode("qr-reader");
       }
