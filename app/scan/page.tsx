@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import { validateToken, redeemToken } from "@/actions/application";
 import { Card, Button, Input, Badge } from "@/components/ui/brutalist";
-import type { Html5Qrcode } from "html5-qrcode";
+import dynamic from "next/dynamic";
+
+// Dynamically import the scanner with SSR disabled
+const Scanner = dynamic(
+  () => import("@yudiel/react-qr-scanner").then((mod) => mod.Scanner),
+  { ssr: false }
+);
 
 export default function ScanPage() {
   const [token, setToken] = useState("");
@@ -11,60 +17,6 @@ export default function ScanPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
-  const [scannerReady, setScannerReady] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-
-  useEffect(() => {
-    // Cleanup scanner on unmount
-    return () => {
-      if (scannerRef.current?.isScanning) {
-        scannerRef.current.stop().catch(console.error);
-      }
-    };
-  }, []);
-
-  const startScanner = async () => {
-    setError("");
-    setResult(null);
-    
-    try {
-      // Dynamically import the library to avoid SSR issues
-      const { Html5Qrcode } = await import("html5-qrcode");
-      
-      if (!scannerRef.current) {
-        scannerRef.current = new Html5Qrcode("qr-reader");
-      }
-
-      await scannerRef.current.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-        },
-        async (decodedText) => {
-          // QR code detected
-          setToken(decodedText);
-          await stopScanner();
-          await validateScannedToken(decodedText);
-        },
-        (errorMessage) => {
-          // Ignore scan errors (no QR found)
-        }
-      );
-      setScanning(true);
-      setScannerReady(true);
-    } catch (err: any) {
-      setError("Camera access denied or unavailable. Please use manual entry.");
-      console.error(err);
-    }
-  };
-
-  const stopScanner = async () => {
-    if (scannerRef.current?.isScanning) {
-      await scannerRef.current.stop();
-    }
-    setScanning(false);
-  };
 
   const validateScannedToken = async (scannedToken: string) => {
     setLoading(true);
@@ -85,9 +37,26 @@ export default function ScanPage() {
     }
   };
 
+  const handleScan = useCallback(async (detectedCodes: any[]) => {
+    if (detectedCodes && detectedCodes.length > 0) {
+      const scannedText = detectedCodes[0].rawValue;
+      if (scannedText) {
+        setToken(scannedText);
+        setScanning(false);
+        await validateScannedToken(scannedText);
+      }
+    }
+  }, []);
+
+  const handleError = (error: any) => {
+    console.error("Scanner error:", error);
+    setError("Camera access denied or unavailable. Please use manual entry.");
+    setScanning(false);
+  };
+
   const handleManualScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    await stopScanner();
+    setScanning(false);
     await validateScannedToken(token);
   };
 
@@ -99,7 +68,7 @@ export default function ScanPage() {
     setLoading(false);
   };
 
-  const resetScanner = async () => {
+  const resetScanner = () => {
     setToken("");
     setResult(null);
     setError("");
@@ -115,13 +84,22 @@ export default function ScanPage() {
           <>
             <div className="relative">
               <div 
-                id="qr-reader" 
-                className={`w-full aspect-square bg-gray-900 border-2 border-black ${scanning ? '' : 'flex items-center justify-center'}`}
+                className={`w-full aspect-square bg-gray-900 border-2 border-black overflow-hidden ${scanning ? '' : 'flex items-center justify-center'}`}
               >
-                {!scanning && (
+                {scanning ? (
+                  <Scanner
+                    onScan={handleScan}
+                    onError={handleError}
+                    constraints={{ facingMode: "environment" }}
+                    styles={{
+                      container: { width: "100%", height: "100%" },
+                      video: { width: "100%", height: "100%", objectFit: "cover" },
+                    }}
+                  />
+                ) : (
                   <div className="text-center p-4">
                     <p className="font-mono text-gray-400 text-sm mb-4">Camera preview will appear here</p>
-                    <Button onClick={startScanner} className="bg-blue-500 border-blue-700">
+                    <Button onClick={() => setScanning(true)} className="bg-blue-500 border-blue-700">
                       📷 START CAMERA
                     </Button>
                   </div>
@@ -129,8 +107,8 @@ export default function ScanPage() {
               </div>
               {scanning && (
                 <Button 
-                  onClick={stopScanner} 
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 border-red-700"
+                  onClick={() => setScanning(false)} 
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 border-red-700 z-10"
                 >
                   STOP CAMERA
                 </Button>
