@@ -130,7 +130,8 @@ export async function rejectApplication(id: string) {
 
 export async function validateToken(token: string) {
     const app = await prisma.discountApplication.findUnique({
-        where: { qrToken: token }
+        where: { qrToken: token },
+        include: { company: true }
     });
     return app;
 }
