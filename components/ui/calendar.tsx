@@ -22,12 +22,12 @@ function Calendar({
         month: "space-y-4",
         month_caption: "flex justify-center pt-1 relative items-center h-10",
         caption_label: "text-sm font-black uppercase tracking-wider",
-        nav: "flex items-center gap-1 absolute inset-x-1 top-0 justify-between",
+        nav: "flex items-center gap-1 absolute inset-x-0 top-0 z-10 justify-between px-1",
         button_previous: cn(
-          "inline-flex items-center justify-center size-8 bg-white border-2 border-black hover:bg-black hover:text-white transition-colors"
+          "inline-flex items-center justify-center size-8 bg-white border-2 border-black hover:bg-black hover:text-white transition-colors cursor-pointer"
         ),
         button_next: cn(
-          "inline-flex items-center justify-center size-8 bg-white border-2 border-black hover:bg-black hover:text-white transition-colors"
+          "inline-flex items-center justify-center size-8 bg-white border-2 border-black hover:bg-black hover:text-white transition-colors cursor-pointer"
         ),
         month_grid: "w-full border-collapse",
         weekdays: "flex",
